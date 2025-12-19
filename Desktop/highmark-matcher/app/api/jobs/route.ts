@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { parseJobs, ParsedJob } from '@/utils/jobParser';
 
+// 明确指定运行时配置，确保在 Vercel 上正确部署
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // 批量创建岗位
 export async function POST(request: NextRequest) {
   try {

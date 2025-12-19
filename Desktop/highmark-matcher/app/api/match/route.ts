@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { matchJobsWithResume } from '@/lib/deepseek';
 
+// 明确指定运行时配置，确保在 Vercel 上正确部署
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 // 执行人岗匹配
 export async function POST(request: NextRequest) {
   try {
