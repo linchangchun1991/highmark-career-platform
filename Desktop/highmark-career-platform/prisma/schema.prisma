@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          UserRole  @default(COACH)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  resumes       Resume[]
+  jobPostings   JobPosting[]
+  matches       Match[]
+  
+  @@map("users")
+}
+
+enum UserRole {
+  COACH
+  BD
+}
+
+model Resume {
+  id              String   @id @default(cuid())
+  userId          String
+  fileName        String
+  fileUrl         String
+  originalText    String?
+  parsedData      String?  // JSON string of parsed resume data
+  candidateProfile String? // JSON string of candidate profile
+  keywords        String?  // JSON array of keywords
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matches         Match[]
+  
+  @@map("resumes")
+}
+
+model JobPosting {
+  id          String   @id @default(cuid())
+  userId      String?  // BD who uploaded this job
+  company     String
+  position    String
+  location    String
+  link        String
+  description String?
+  requirements String? // JSON array
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  matches     Match[]
+  
+  @@map("job_postings")
+}
+
+model Match {
+  id            String   @id @default(cuid())
+  resumeId      String
+  jobPostingId  String
+  score         Float    // Match score 0-100
+  reasoning     String   // Match reasoning
+  status        MatchStatus @default(PENDING)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  resume        Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobPosting    JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  userId        String?  // Coach who initiated the match
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@unique([resumeId, jobPostingId])
+  @@map("matches")
+}
+
+enum MatchStatus {
+  PENDING
+  APPLIED
+  REJECTED
+  ACCEPTED
+}
