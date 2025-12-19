@@ -1,0 +1,30 @@
+===========================================
+Vercel/Zeabur 环境变量配置
+===========================================
+
+请将这些变量添加到你的部署平台（Vercel 或 Zeabur）：
+
+-------------------------------------------
+变量 1: NEXT_PUBLIC_SUPABASE_URL
+-------------------------------------------
+值: https://ysscurevsdenbmsnixpc.supabase.co
+
+-------------------------------------------
+变量 2: NEXT_PUBLIC_SUPABASE_ANON_KEY
+-------------------------------------------
+值: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlzc2N1cmV2c2RlbmJtc25peHBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNDc2MDEsImV4cCI6MjA4MTcyMzYwMX0.xTuOXCJQXTXdLGmppvyLq8nEh2RsQQZcbqbSuvZlJGc
+
+-------------------------------------------
+变量 3: DEEPSEEK_API_KEY
+-------------------------------------------
+值: （如果你有 DeepSeek API Key 就填，没有就留空）
+
+===========================================
+重要提示：
+1. 变量名必须完全一致（包括大小写）
+2. 值不要有多余的空格
+3. 在 Vercel/Zeabur 的 "Environment Variables" 中添加
+4. 添加后需要重新部署才会生效
+
+===========================================
+
