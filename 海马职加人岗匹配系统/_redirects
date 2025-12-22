@@ -1,0 +1,6 @@
+# Netlify 重定向文件
+# 如果使用 Netlify，这个文件会在根目录生效
+
+# 根路径重定向到产品查询页面
+/  /product-price-query.html  200
+

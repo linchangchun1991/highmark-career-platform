@@ -1,0 +1,35 @@
+# Netlify 配置文件
+
+[build]
+  # 如果文件在子目录中
+  base = "海马职加人岗匹配系统"
+  # 或者如果文件在根目录
+  # base = "."
+
+  # 发布目录
+  publish = "."
+
+  # 构建命令（不需要）
+  command = ""
+
+# 重定向规则
+[[redirects]]
+  from = "/"
+  to = "/product-price-query.html"
+  status = 200
+
+# 头部设置
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+
+[[headers]]
+  for = "/products_with_policies.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Content-Type = "application/json; charset=utf-8"
+    Cache-Control = "public, max-age=3600"
+
