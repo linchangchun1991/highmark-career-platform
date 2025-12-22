@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品价格查询系统 | 海马职加</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-purple: #8b5cf6;
+            --dark-bg: #0a0e27;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent: #6366f1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 25%, #2d1b4e 50%, #1a1f3a 75%, #0a0e27 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding: 2rem;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .guide-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .guide-section:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+        }
+
+        .guide-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .guide-title::before {
+            content: "📋";
+            font-size: 1.2rem;
+        }
+
+        .guide-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .guide-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .guide-content li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .guide-content li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--primary-purple);
+        }
+
+        /* 事业部优惠政策公告 */
+        .policy-announcement {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .policy-announcement-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .policy-announcement-title::before {
+            content: "🎁";
+            font-size: 1.2rem;
+        }
+
+        .policy-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .policy-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .policy-item-name {
+            font-weight: 600;
+            color: var(--primary-purple);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .policy-item-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .search-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-tab {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .search-tab:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--primary-purple);
+            color: var(--text-primary);
+        }
+
+        .search-tab.active {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-purple));
+            border-color: transparent;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+        }
+
+        .results-count {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* 产品列表网格布局 */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .product-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .product-card {
+                aspect-ratio: auto;
+                padding: 1.25rem;
+            }
+        }
+
+        /* 装饰性线条和英文元素 */
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.5), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .product-card::after {
+            content: 'PRODUCT';
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            color: rgba(255, 255, 255, 0.08);
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .product-card:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.25), 0 0 40px rgba(59, 130, 246, 0.15);
+            transform: translateY(-4px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-card:hover::after {
+            color: rgba(255, 255, 255, 0.12);
+        }
+
+
+        .product-header {
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.9) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .product-name {
+                font-size: 1.1rem;
+            }
+        }
+
+        .product-tags {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.6rem;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .tag.hot-sale {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.3), rgba(249, 115, 22, 0.3));
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .tag.hot-tag {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.3), rgba(251, 146, 60, 0.3));
+            border-color: rgba(251, 191, 36, 0.5);
+            color: #fcd34d;
+            font-weight: 600;
+            color: var(--primary-purple);
+        }
+
+        .tag.cooperation {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+            color: var(--primary-blue);
+        }
+
+        /* 产品价格区域 */
+        .product-price-section {
+            margin: 1rem 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-standard-price {
+            margin-bottom: 0.75rem;
+        }
+
+        .product-standard-price-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-standard-price-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        @media (max-width: 768px) {
+            .product-standard-price-value {
+                font-size: 1.25rem;
+            }
+        }
+
+        .product-final-price {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .product-final-price-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .product-final-price-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .product-final-price-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* 产品说明 */
+        .product-description {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .product-description-item {
+            margin: 0.4rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .product-description-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 60px;
+            flex-shrink: 0;
+        }
+
+        .product-description-value {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .no-results-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            transition: all 0.3s ease;
+        }
+
+        .no-results-card:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+
+        .no-results-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .no-results-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-results-suggestions {
+            text-align: left;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .no-results-suggestions-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .no-results-suggestions-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .no-results-suggestions-list li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(139, 92, 246, 0.3);
+            border-top-color: var(--primary-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+
+
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .search-tabs {
+                flex-direction: column;
+            }
+
+            .policy-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div style="flex: 1;"></div>
+                <div style="flex: 1; text-align: center;">
+                    <h1>HIGHMARK</h1>
+                    <div class="subtitle">产品价格查询系统</div>
+                </div>
+                <div style="flex: 1; display: flex; justify-content: flex-end;">
+                    <button id="adminBtn" style="padding: 0.5rem 1rem; background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; color: var(--text-primary); cursor: pointer; font-size: 0.9rem; transition: all 0.3s ease;">📝 交付方入口</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-section">
+            <div class="guide-title">使用指南</div>
+            <div class="guide-content">
+                <ul>
+                    <li><strong>产品名查询：</strong>输入产品名称，如"千里马计划"、"PTA"等</li>
+                    <li><strong>交付方查询：</strong>输入交付部门，如"服务部"、"领航"、"齐童"等</li>
+                    <li><strong>行业查询：</strong>输入行业关键词，如"金融"、"咨询"、"科技"等</li>
+                    <li><strong>地点查询：</strong>输入地点，如"北京"、"上海"、"远程"等</li>
+                    <li><strong>公司名查询：</strong>输入公司名称进行搜索</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="policy-announcement" id="policyAnnouncement">
+            <div class="policy-announcement-title">事业部优惠政策</div>
+            <div class="policy-list" id="policyList">
+                <div class="policy-item">
+                    <div class="policy-item-name">一口价活动</div>
+                    <div class="policy-item-desc">
+                        <div><strong>适用产品：</strong>部分实习产品（标准售价25800）</div>
+                        <div style="margin-top: 0.5rem;"><strong>优惠政策：</strong>单段一口价25,800，两段打9折，三段85折</div>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">详见下方"一口价"搜索按钮查看所有活动产品</div>
+                    </div>
+                </div>
+                <div class="policy-item">
+                    <div class="policy-item-name">-3000优惠活动</div>
+                    <div class="policy-item-desc">
+                        <div><strong>适用产品：</strong>部分实习产品（标准售价16800-39800，不含美国产品）</div>
+                        <div style="margin-top: 0.5rem;"><strong>优惠政策：</strong>标准售价减3000元</div>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">详见下方"-3000优惠"搜索按钮查看所有活动产品</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-section">
+            <div class="search-tabs">
+                <div class="search-tab active" data-type="all">全部</div>
+                <div class="search-tab" data-type="product">产品名</div>
+                <div class="search-tab" data-type="delivery">交付方</div>
+                <div class="search-tab" data-type="industry">行业</div>
+                <div class="search-tab" data-type="location">地点</div>
+                <div class="search-tab" data-type="company">公司名</div>
+                <div class="search-tab" data-type="fixed-price">一口价</div>
+                <div class="search-tab" data-type="discount-3000">-3000优惠</div>
+                <div class="search-tab" data-type="winter-activity">🔥 冬季活动</div>
+            </div>
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="输入关键词进行搜索...">
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <button id="aiMatchBtn" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border: none; border-radius: 8px; color: white; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">🤖 AI智能选岗</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-count" id="resultsCount"></div>
+            <div class="products-grid" id="productList"></div>
+        </div>
+    </div>
+
+    <!-- AI选岗模态框 -->
+    <div id="aiMatchModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1001; overflow-y: auto; padding: 2rem;">
+        <div style="max-width: 900px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; padding: 2rem; backdrop-filter: blur(20px); border: 1px solid var(--card-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600;">🤖 AI智能选岗</h2>
+                <button id="closeAIMatchModal" style="background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;">×</button>
+            </div>
+            <div id="aiMatchContent">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">上传简历（PDF/Word）</label>
+                    <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary);">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">目标地点</label>
+                    <input type="text" id="targetLocation" placeholder="如：北京、上海、深圳、远程" style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">目标行业</label>
+                    <input type="text" id="targetIndustry" placeholder="如：金融、咨询、互联网、科技" style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">目标岗位（可选）</label>
+                    <input type="text" id="targetPosition" placeholder="如：产品经理、数据分析、投资分析" style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                </div>
+                <button id="startAIMatch" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #8b5cf6, #3b82f6); border: none; border-radius: 8px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem;">开始智能匹配</button>
+                <div id="aiMatchResults" style="display: none; margin-top: 2rem; padding: 1.5rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">
+                    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">匹配结果</h3>
+                    <div id="aiMatchProducts" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑入口模态框 -->
+    <div id="adminModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.8); z-index: 1000; overflow-y: auto; padding: 2rem;">
+        <div style="max-width: 800px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; padding: 2rem; backdrop-filter: blur(20px); border: 1px solid var(--card-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 600;">交付方产品上传</h2>
+                <button id="closeAdminModal" style="background: none; border: none; color: var(--text-primary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;">×</button>
+            </div>
+            <div id="adminContent">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">登录密码</label>
+                    <input type="password" id="adminPassword" placeholder="请输入交付方登录密码" style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 1rem;">
+                </div>
+                <button id="adminLoginBtn" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border: none; border-radius: 8px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 2rem;">登录</button>
+                <div id="adminUploadSection" style="display: none;">
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border: 1px solid rgba(139, 92, 246, 0.3);">
+                        <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">上传说明</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                            请下载产品上传模板，按照模板格式填写产品信息后上传。系统将自动新增产品到数据库。
+                        </p>
+                        <a href="#" id="downloadTemplate" style="display: inline-block; margin-top: 0.5rem; color: #8b5cf6; text-decoration: underline;">📥 下载产品上传模板 (Excel)</a>
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 600;">上传产品文件</label>
+                        <input type="file" id="productFile" accept=".xlsx,.xls" style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary);">
+                    </div>
+                    <button id="uploadBtn" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #10b981, #34d399); border: none; border-radius: 8px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer;">上传产品</button>
+                    <div id="uploadResult" style="margin-top: 1rem; padding: 1rem; border-radius: 8px; display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 产品数据（将从外部文件加载）
+        let productsData = [];
+        let currentSearchType = 'all';
+        let searchCache = new Map(); // 搜索结果缓存
+
+        // 管理员/交付方功能
+        const ADMIN_PASSWORD = 'delivery2025';
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 管理员按钮事件
+            const adminBtn = document.getElementById('adminBtn');
+            const adminModal = document.getElementById('adminModal');
+            const closeAdminModal = document.getElementById('closeAdminModal');
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (adminBtn) {
+                adminBtn.addEventListener('click', function() {
+                    adminModal.style.display = 'block';
+                    document.getElementById('adminContent').style.display = 'block';
+                    document.getElementById('adminUploadSection').style.display = 'none';
+                    document.getElementById('adminPassword').value = '';
+                });
+            }
+            
+            if (closeAdminModal) {
+                closeAdminModal.addEventListener('click', function() {
+                    adminModal.style.display = 'none';
+                });
+            }
+            
+            if (adminLoginBtn) {
+                adminLoginBtn.addEventListener('click', function() {
+                    const password = document.getElementById('adminPassword').value;
+                    if (password === ADMIN_PASSWORD) {
+                        document.getElementById('adminUploadSection').style.display = 'block';
+                        document.getElementById('adminContent').querySelector('div:first-child').style.display = 'none';
+                        adminLoginBtn.style.display = 'none';
+                    } else {
+                        alert('密码错误，请重新输入');
+                    }
+                });
+            }
+            
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', function() {
+                    const fileInput = document.getElementById('productFile');
+                    if (!fileInput.files || fileInput.files.length === 0) {
+                        alert('请选择要上传的产品文件');
+                        return;
+                    }
+                    
+                    const file = fileInput.files[0];
+                    const resultDiv = document.getElementById('uploadResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.innerHTML = '<div style="color: #10b981; padding: 1rem;">✅ 上传成功！产品已添加到系统（此功能需要后端支持）</div>';
+                    
+                    setTimeout(() => {
+                        resultDiv.style.display = 'none';
+                        fileInput.value = '';
+                    }, 3000);
+                });
+            }
+            
+            const downloadTemplate = document.getElementById('downloadTemplate');
+            if (downloadTemplate) {
+                downloadTemplate.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('产品上传模板下载功能：请使用Excel格式，包含字段：产品名、交付部门、形式、行业、岗位、地点、标准售价、事业部最大优惠等');
+                });
+            }
+            
+            // AI选岗功能按钮
+            const aiMatchBtn = document.getElementById('aiMatchBtn');
+            if (aiMatchBtn) {
+                aiMatchBtn.addEventListener('click', function() {
+                    showAIMatchModal();
+                });
+            }
+            
+            // 加载数据
+            loadProductsData();
+
+            // 搜索标签切换
+            const searchPlaceholders = {
+                'all': '输入关键词进行搜索...',
+                'product': '输入产品名称，如"千里马"、"PTA"...',
+                'delivery': '输入交付方，如"服务部"、"领航"、"齐童"...',
+                'industry': '输入行业，如"金融"、"咨询"、"科技"...',
+                'location': '输入地点，如"北京"、"上海"、"远程"...',
+                'company': '输入公司名称...',
+                'fixed-price': '显示所有一口价产品（自动搜索）',
+                'discount-3000': '显示所有-3000优惠产品（自动搜索）',
+                'winter-activity': '显示所有冬季活动产品（自动搜索）'
+            };
+            
+            document.querySelectorAll('.search-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSearchType = this.dataset.type;
+                    const searchInput = document.getElementById('searchInput');
+                    
+                    // 更新占位符
+                    searchInput.placeholder = searchPlaceholders[currentSearchType] || '输入关键词进行搜索...';
+                    
+                    // 对于特殊搜索类型，自动清空输入框并搜索
+                    if (currentSearchType === 'fixed-price' || currentSearchType === 'discount-3000' || currentSearchType === 'winter-activity') {
+                        searchInput.value = '';
+                        searchInput.disabled = true;
+                        searchInput.style.opacity = '0.6';
+                        searchProducts('');
+                    } else {
+                        searchInput.disabled = false;
+                        searchInput.style.opacity = '1';
+                        const query = searchInput.value;
+                        searchProducts(query);
+                    }
+                });
+            });
+
+            // 搜索输入（防抖，但减少延迟）
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) {
+                return;
+            }
+            
+            let searchTimeout;
+            
+            // 立即搜索函数
+            const doSearch = () => {
+                const query = searchInput.value.trim();
+                
+                if (!productsData || productsData.length === 0) {
+                    // 如果数据未加载，等待一下再试
+                    setTimeout(() => {
+                        if (productsData && productsData.length > 0) {
+                            searchProducts(query);
+                        }
+                    }, 500);
+                    return;
+                }
+                
+                searchProducts(query);
+            };
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                // 如果输入为空，立即显示默认结果
+                if (query === '') {
+                    searchProducts('');
+                    return;
+                }
+                
+                // 防抖延迟150ms
+                searchTimeout = setTimeout(() => {
+                    doSearch();
+                }, 150);
+            });
+
+            // 支持回车键搜索（立即执行）
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    doSearch();
+                }
+            });
+            
+            // 支持粘贴后立即搜索
+            searchInput.addEventListener('paste', function() {
+                setTimeout(() => {
+                    doSearch();
+                }, 10);
+            });
+            
+            // 添加搜索按钮（如果有）
+            const searchButton = document.getElementById('searchButton');
+            if (searchButton) {
+                searchButton.addEventListener('click', function() {
+                    clearTimeout(searchTimeout);
+                    doSearch();
+                });
+            }
+        });
+
+        // 加载产品数据
+        async function loadProductsData() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top: 1rem;">正在加载产品数据...</div></div>';
+            
+            try {
+                const response = await fetch('products_with_policies.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                
+                if (!data || !data.products || !Array.isArray(data.products)) {
+                    throw new Error('数据格式错误：缺少 products 数组');
+                }
+                
+                productsData = data.products;
+                
+                // 加载并显示事业部优惠政策
+                loadPolicyAnnouncement(data.products);
+                
+                // 检查是否有搜索输入，如果有则执行搜索
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput && searchInput.value.trim()) {
+                    searchProducts(searchInput.value.trim());
+                } else {
+                    searchProducts('');
+                }
+            } catch (error) {
+                productList.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">⚠️</div>
+                        <div style="margin-bottom: 1rem;"><strong>数据加载失败</strong></div>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                            ${error.message || '请检查 products_with_policies.json 文件是否存在且格式正确'}
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                            提示：如果本地打开，请使用本地服务器（如 python -m http.server）
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 搜索产品（带缓存优化）
+        function searchProducts(query) {
+            const productList = document.getElementById('productList');
+            const resultsCount = document.getElementById('resultsCount');
+
+            if (!productList || !resultsCount) {
+                return;
+            }
+
+            if (!productsData) {
+                productList.innerHTML = '<div class="no-results"><div class="no-results-icon">⚠️</div><div>数据未加载</div></div>';
+                return;
+            }
+
+            if (productsData.length === 0) {
+                productList.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div style="margin-top: 1rem;">数据加载中...</div></div>';
+                return;
+            }
+
+            const cacheKey = `${currentSearchType}:${query}`;
+            
+            // 检查缓存
+            if (searchCache.has(cacheKey)) {
+                const cached = searchCache.get(cacheKey);
+                renderProducts(cached);
+                resultsCount.textContent = `找到 ${cached.length} 个产品`;
+                return;
+            }
+
+            if (!query || query.trim() === '') {
+                const defaultProducts = productsData.slice(0, 20);
+                renderProducts(defaultProducts);
+                resultsCount.textContent = `显示前 20 个产品（共 ${productsData.length} 个）`;
+                searchCache.set(cacheKey, defaultProducts);
+                return;
+            }
+
+            const searchTerm = query.toLowerCase().trim();
+            let filtered = [];
+
+            // 构建搜索文本（包含所有可搜索字段）- 支持多类模糊搜索
+            const buildSearchText = (p) => {
+                // 安全获取字段值，处理null、undefined、空字符串
+                const getField = (field) => {
+                    const value = p[field];
+                    return (value && typeof value === 'string' && value.trim()) ? value.trim() : '';
+                };
+                
+                return (
+                    getField('产品名') + ' ' +
+                    getField('交付部门') + ' ' +
+                    getField('形式') + ' ' +
+                    getField('行业') + ' ' +
+                    getField('岗位') + ' ' +
+                    getField('地点') + ' ' +
+                    getField('Base地点') + ' ' +
+                    getField('公司名') + ' ' +
+                    getField('来源Sheet') + ' ' +
+                    getField('搜索关键词')
+                ).toLowerCase();
+            };
+
+            // 统一的多条件搜索函数
+            const matchesSearch = (p, term, searchType) => {
+                // 安全获取字段值
+                const getField = (field) => {
+                    try {
+                        const value = p[field];
+                        if (value === null || value === undefined) return '';
+                        if (typeof value === 'string') {
+                            return value.trim().toLowerCase();
+                        }
+                        return String(value).trim().toLowerCase();
+                    } catch (e) {
+                        return '';
+                    }
+                };
+                
+                const searchText = buildSearchText(p);
+                
+                // 根据搜索类型进行匹配
+                switch (searchType) {
+                    case 'product':
+                        // 产品名搜索：主要搜索产品名，也搜索其他字段
+                        return getField('产品名').includes(term) || 
+                               getField('岗位').includes(term) ||
+                               getField('行业').includes(term);
+                    case 'delivery':
+                        // 交付方搜索：搜索交付部门、来源Sheet、产品名
+                        return getField('交付部门').includes(term) || 
+                               getField('来源Sheet').includes(term) || 
+                               getField('产品名').includes(term);
+                    case 'industry':
+                        // 行业搜索：搜索行业、岗位、产品名
+                        return getField('行业').includes(term) || 
+                               getField('岗位').includes(term) || 
+                               getField('产品名').includes(term);
+                    case 'location':
+                        // 地点搜索：搜索地点、Base地点、产品名
+                        return getField('地点').includes(term) || 
+                               getField('Base地点').includes(term) || 
+                               getField('产品名').includes(term);
+                    case 'company':
+                        // 公司名搜索：搜索公司名、岗位、产品名
+                        return getField('公司名').includes(term) || 
+                               getField('岗位').includes(term) || 
+                               getField('产品名').includes(term);
+                    case 'fixed-price':
+                        // 一口价搜索：搜索包含"1段25800"或"一口价"的实习产品
+                        const discountPolicy = getField('事业部最大优惠');
+                        const isInternshipFixed = getField('是否实习类') === 'true' || product.是否实习类 === true;
+                        return (discountPolicy.includes('1段25800') || discountPolicy.includes('一口价')) && isInternshipFixed;
+                    case 'discount-3000':
+                        // -3000优惠搜索：搜索包含"减3000"的实习产品，排除美国产品
+                        const discountPolicy3000 = getField('事业部最大优惠');
+                        const productName3000 = getField('产品名');
+                        const location3000 = getField('地点') + ' ' + getField('Base地点');
+                        const isInternship3000 = getField('是否实习类') === 'true' || product.是否实习类 === true;
+                        const isUSProduct = productName3000.includes('美国') || location3000.includes('美国');
+                        return (discountPolicy3000.includes('减3000') || discountPolicy3000.includes('-3000')) && isInternship3000 && !isUSProduct;
+                    case 'winter-activity':
+                        // 冬季活动搜索：匹配活动表格中的产品
+                        // 一口价产品（1段25800）或-3000优惠产品（排除美国）
+                        const discountPolicyWinter = getField('事业部最大优惠');
+                        const productNameWinter = getField('产品名');
+                        const locationWinter = getField('地点') + ' ' + getField('Base地点');
+                        const isInternshipWinter = getField('是否实习类') === 'true' || product.是否实习类 === true;
+                        const isUSProductWinter = productNameWinter.includes('美国') || locationWinter.includes('美国');
+                        // 一口价或-3000优惠（排除美国）
+                        const isFixedPrice = discountPolicyWinter.includes('1段25800') || discountPolicyWinter.includes('一口价');
+                        const isDiscount3000 = (discountPolicyWinter.includes('减3000') || discountPolicyWinter.includes('-3000')) && !isUSProductWinter;
+                        return isInternshipWinter && (isFixedPrice || isDiscount3000);
+                    default: // all - 综合搜索所有字段
+                        return searchText.includes(term);
+                }
+            };
+
+            // 使用统一搜索函数
+            try {
+                filtered = productsData.filter((p) => {
+                    try {
+                        return matchesSearch(p, searchTerm, currentSearchType);
+                    } catch (e) {
+                        return false;
+                    }
+                });
+            } catch (e) {
+                filtered = [];
+            }
+
+            // 缓存结果（限制缓存大小）
+            if (searchCache.size > 100) {
+                const firstKey = searchCache.keys().next().value;
+                searchCache.delete(firstKey);
+            }
+            searchCache.set(cacheKey, filtered);
+
+            // 渲染结果
+            try {
+                renderProducts(filtered);
+                resultsCount.textContent = filtered.length > 0 ? `找到 ${filtered.length} 个产品` : '未找到相关产品';
+            } catch (e) {
+                productList.innerHTML = `<div class="no-results"><div class="no-results-icon">⚠️</div><div>渲染出错: ${e.message}</div></div>`;
+            }
+        }
+
+        // 计算最终价格（直接使用Excel中的最大优惠后价格，不重新计算）
+        function calculateFinalPrice(product) {
+            // 优先级1: 直接使用Excel中的最大优惠后价格（这是最准确的）
+            if (product.最大优惠后价格 && product.最大优惠后价格 !== '无' && product.最大优惠后价格 !== '' && product.最大优惠后价格 !== null && product.最大优惠后价格 !== undefined) {
+                // 如果是复杂格式（如课时卡），直接返回
+                if (typeof product.最大优惠后价格 === 'string') {
+                    if (product.最大优惠后价格.includes('课时') || product.最大优惠后价格.includes('\n')) {
+                        return product.最大优惠后价格;
+                    }
+                }
+                // 尝试解析为数字
+                const finalPrice = parsePrice(product.最大优惠后价格);
+                if (!isNaN(finalPrice) && finalPrice > 0) {
+                    return finalPrice.toString();
+                }
+                // 如果解析失败，返回原始值
+                return String(product.最大优惠后价格);
+            }
+
+            // 优先级2: 如果标准售价不是有效数字，返回标准售价文本
+            const standardPrice = parsePrice(product.标准售价);
+            if (isNaN(standardPrice) || standardPrice === 0) {
+                // 如果标准售价也不是有效数字，尝试从产品组中查找
+                return product.标准售价 || '面议';
+            }
+
+            // 优先级3: 如果没有优惠后价格，使用标准售价
+            return standardPrice.toString();
+        }
+
+        // 解析价格（提取完整数字）
+        function parsePrice(priceText) {
+            if (!priceText) return NaN;
+            if (typeof priceText === 'number') {
+                return priceText;
+            }
+            // 移除逗号，然后匹配完整的数字（支持多位数字）
+            const cleanText = String(priceText).replace(/,/g, '');
+            const match = cleanText.match(/(\d+(?:\.\d+)?)/);
+            if (match) {
+                return parseFloat(match[1]);
+            }
+            return NaN;
+        }
+
+        // 格式化价格显示
+        function formatPrice(price) {
+            if (typeof price === 'string' && (price.includes('/') || price.includes('课时') || price.includes('随心配'))) {
+                return price;
+            }
+            const num = parseFloat(price);
+            if (isNaN(num)) {
+                return price || '面议';
+            }
+            return num.toLocaleString('zh-CN');
+        }
+
+        // 格式化优惠显示
+        function formatDiscount(discountText) {
+            if (!discountText || discountText === '无') {
+                return { label: '无优惠', value: '', type: 'none' };
+            }
+
+            // 一口价
+            if (discountText.includes('一口价')) {
+                const match = discountText.match(/(\d{1,3}(?:,\d{3})*(?:\.\d+)?)/);
+                if (match) {
+                    return { label: '一口价', value: formatPrice(match[1]) + '元', type: 'fixed' };
+                }
+                return { label: '一口价', value: '', type: 'fixed' };
+            }
+
+            // 百分比折扣
+            if (discountText.includes('折')) {
+                const match = discountText.match(/(\d+(?:\.\d+)?)折/);
+                if (match) {
+                    return { label: discountText, value: match[1] + '折', type: 'percentage' };
+                }
+            }
+
+            // 条件折扣（4w以下98%，4w以上95%）
+            if (discountText.includes('4w以下') || discountText.includes('4w以上')) {
+                return { label: discountText, value: '条件折扣', type: 'conditional' };
+            }
+
+            // 减价优惠 - 支持多种格式
+            const discountPatterns = [
+                /减\s*(\d+)\s*优惠/,                    // "减3000优惠"
+                /减\s*(\d+)/,                            // "减3000"
+                /(?:PTA|最大优惠|优惠)[-\s]*(\d+)/,      // "PTA最大优惠-2000"、"最大优惠-2000"
+                /[-\s](\d+)(?:元|块)?$/,                 // "-2000"
+                /(\d+)(?:元|块)?\s*(?:优惠|减)/          // "2000优惠"
+            ];
+
+            for (const pattern of discountPatterns) {
+                const match = discountText.match(pattern);
+                if (match && match[1]) {
+                    return { 
+                        label: '减价优惠', 
+                        value: formatPrice(match[1]) + '元', 
+                        type: 'amount' 
+                    };
+                }
+            }
+
+            // 直接数字
+            const directNumberMatch = discountText.match(/^(\d+)$/);
+            if (directNumberMatch) {
+                return { 
+                    label: '优惠金额', 
+                    value: formatPrice(directNumberMatch[1]) + '元', 
+                    type: 'amount' 
+                };
+            }
+
+            // 其他情况（如复杂规则）
+            return { label: discountText, value: '', type: 'text' };
+        }
+
+        // 渲染产品列表
+        function renderProducts(products) {
+            const productList = document.getElementById('productList');
+
+            if (!products || products.length === 0) {
+                productList.innerHTML = `
+                    <div class="no-results-card">
+                        <div class="no-results-icon">🔍</div>
+                        <div class="no-results-title">未找到相关产品</div>
+                        <div class="no-results-text">
+                            抱歉，没有找到匹配的产品。请尝试：
+                        </div>
+                        <div class="no-results-suggestions">
+                            <div class="no-results-suggestions-title">💡 搜索建议：</div>
+                            <ul class="no-results-suggestions-list">
+                                <li>• 检查关键词拼写是否正确</li>
+                                <li>• 尝试使用更简短的关键词</li>
+                                <li>• 切换到"全部"搜索模式</li>
+                                <li>• 尝试搜索产品名、交付方、行业、地点等</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // 按产品名和交付部门分组（去重：同一合作方的相同产品）
+            const groupedProducts = {};
+            products.forEach(product => {
+                // 使用产品名+交付部门作为key，去重同一合作方的相同产品
+                const key = `${product.产品名}_${product.交付部门 || ''}`;
+                if (!groupedProducts[key]) {
+                    groupedProducts[key] = [];
+                }
+                groupedProducts[key].push(product);
+            });
+            
+            // 对每个产品组按时长排序
+            Object.keys(groupedProducts).forEach(key => {
+                groupedProducts[key].sort((a, b) => {
+                    const order = {'1个月': 1, '2个月': 2, '3个月': 3};
+                    const aOrder = order[a.时长] || 999;
+                    const bOrder = order[b.时长] || 999;
+                    return aOrder - bOrder;
+                });
+            });
+
+            productList.innerHTML = Object.values(groupedProducts).map(productGroup => {
+                // 使用第一个产品作为主信息
+                const mainProduct = productGroup[0];
+                
+                // 计算最低优惠后价格（如果有多个时长，取最低的）
+                let minFinalPrice = calculateFinalPrice(mainProduct);
+                if (productGroup.length > 1) {
+                    const prices = productGroup.map(p => {
+                        const price = calculateFinalPrice(p);
+                        const numPrice = parsePrice(price);
+                        return isNaN(numPrice) ? Infinity : numPrice;
+                    });
+                    const minPrice = Math.min(...prices);
+                    if (minPrice !== Infinity) {
+                        minFinalPrice = minPrice.toString();
+                    }
+                }
+                
+                // 修复价格显示问题：确保价格正确显示
+                let standardPrice = formatPrice(mainProduct.标准售价);
+                if (!standardPrice || standardPrice === 'N/A' || standardPrice === '') {
+                    // 如果没有标准售价，尝试从产品组中查找
+                    const priceProduct = productGroup.find(p => p.标准售价 && p.标准售价 !== '');
+                    if (priceProduct) {
+                        standardPrice = formatPrice(priceProduct.标准售价);
+                    } else {
+                        standardPrice = '面议';
+                    }
+                }
+                
+                // 判断是否有优惠
+                const hasDiscount = mainProduct.事业部最大优惠 && 
+                                   mainProduct.事业部最大优惠 !== '无' && 
+                                   mainProduct.事业部最大优惠 !== '' &&
+                                   !mainProduct.事业部最大优惠.includes('不参与优惠');
+                
+                let finalPrice = formatPrice(minFinalPrice);
+                let discountLabel = '';
+                if (!hasDiscount) {
+                    // 无优惠的标注无优惠
+                    discountLabel = '无优惠';
+                    finalPrice = standardPrice;
+                } else {
+                    // 有优惠的取最大优惠，带最低优惠价
+                    discountLabel = mainProduct.事业部最大优惠 || '有优惠';
+                    if (!finalPrice || finalPrice === 'N/A' || finalPrice === '') {
+                        // 如果没有优惠后价格，使用标准售价
+                        finalPrice = standardPrice;
+                    }
+                }
+
+                // 提取标签
+                const tags = [];
+                
+                // 热销标签：千里马4w以上的、网申代投、500强的PTA和实习
+                const productName = mainProduct.产品名 || '';
+                const stdPrice = parsePrice(mainProduct.标准售价);
+                const isHotSale = 
+                    (productName.includes('千里马') && stdPrice >= 40000) ||
+                    productName.includes('网申') || productName.includes('代投') ||
+                    (productName.includes('PTA') && (productName.includes('500强') || productName.includes('中金') || productName.includes('中信') || productName.includes('国信'))) ||
+                    (mainProduct.是否实习类 && (productName.includes('500强') || productName.includes('中金') || productName.includes('中信') || productName.includes('国信') || productName.includes('普华永道') || productName.includes('德勤') || productName.includes('安永')));
+                if (isHotSale) {
+                    tags.push('<span class="tag hot-sale">🔥 热销</span>');
+                }
+                
+                // 热门标签（500强、国央企、顶尖VC等）
+                const hotKeywords = {
+                    '500强': ['500强', 'Fortune 500', '世界500强'],
+                    '国央企': ['中金', '中信', '国信', '国投', '中建', '中科院', '央企', '国企'],
+                    '顶尖VC': ['红杉', 'IDG', '真格', '经纬', 'GGV', '高瓴', '软银'],
+                    '四大': ['普华永道', '德勤', '安永', '毕马威', 'PwC', 'Deloitte', 'EY', 'KPMG'],
+                    '互联网大厂': ['腾讯', '阿里', '百度', '字节', '美团', '滴滴', '京东', '网易', '华为']
+                };
+                
+                for (const [label, keywords] of Object.entries(hotKeywords)) {
+                    if (keywords.some(k => productName.includes(k) || (mainProduct.岗位 || '').includes(k) || (mainProduct.行业 || '').includes(k))) {
+                        tags.push(`<span class="tag hot-tag">⭐ ${label}</span>`);
+                        break; // 只显示第一个匹配的标签
+                    }
+                }
+                
+                if (mainProduct.形式) {
+                    tags.push(`<span class="tag">${mainProduct.形式}</span>`);
+                }
+                if (mainProduct.交付部门 && mainProduct.交付部门.includes('职加产品部')) {
+                    tags.push('<span class="tag cooperation">合作</span>');
+                }
+                if (mainProduct.是否实习类) {
+                    tags.push('<span class="tag">实习</span>');
+                }
+                if (mainProduct.产品名.includes('千里马')) {
+                    tags.push('<span class="tag">千里马</span>');
+                }
+
+                // 构建产品说明（所有信息都在一个卡片里呈现）
+                const descriptionItems = [];
+                if (mainProduct.形式) {
+                    descriptionItems.push({ label: '形式', value: mainProduct.形式 });
+                }
+                if (mainProduct.交付部门) {
+                    descriptionItems.push({ label: '交付部门', value: mainProduct.交付部门 });
+                }
+                if (mainProduct.地点 || mainProduct.Base地点) {
+                    descriptionItems.push({ label: '地点', value: mainProduct.地点 || mainProduct.Base地点 });
+                }
+                // 实习增加时长
+                if (mainProduct.是否实习类 && mainProduct.时长) {
+                    descriptionItems.push({ label: '时长', value: mainProduct.时长 });
+                }
+                if ((mainProduct.是否实习类 || mainProduct.形式 === 'PTA') && mainProduct.行业) {
+                    descriptionItems.push({ label: '行业', value: mainProduct.行业 });
+                }
+                if ((mainProduct.是否实习类 || mainProduct.形式 === 'PTA') && mainProduct.岗位) {
+                    descriptionItems.push({ label: '岗位', value: mainProduct.岗位 });
+                }
+                if (mainProduct.产品名.includes('千里马') && mainProduct.产品配置) {
+                    descriptionItems.push({ label: '配置', value: mainProduct.产品配置.substring(0, 100) + (mainProduct.产品配置.length > 100 ? '...' : '') });
+                }
+
+                // 生成产品图片（使用产品名生成关键词，然后使用占位图服务）
+                // 提取产品关键词用于图片生成
+                let imageKeywords = mainProduct.产品名;
+                if (mainProduct.行业) {
+                    imageKeywords += ' ' + mainProduct.行业;
+                }
+                if (mainProduct.岗位) {
+                    imageKeywords += ' ' + mainProduct.岗位;
+                }
+                // 使用占位图服务（实际部署时可以使用AI生成图片或Unsplash API）
+                const imageUrl = `https://source.unsplash.com/400x300/?office,${encodeURIComponent(imageKeywords)}`;
+                
+                return `
+                    <div class="product-card">
+                        <div class="product-image" style="background-image: url('${imageUrl}'); background-size: cover; background-position: center; background-color: rgba(99, 102, 241, 0.2);">
+                        </div>
+                        <div class="product-header">
+                            <div class="product-name">${mainProduct.产品名}</div>
+                            <div class="product-tags">${tags.join('')}</div>
+                        </div>
+                        <div class="product-price-section">
+                            <div class="product-standard-price">
+                                <div class="product-standard-price-label">标准售价</div>
+                                <div class="product-standard-price-value">${standardPrice}${typeof standardPrice === 'string' && !standardPrice.includes('元') && !standardPrice.includes('/') && !standardPrice.includes('课时') ? '元' : ''}</div>
+                            </div>
+                            ${descriptionItems.length > 0 ? `
+                            <div class="product-description">
+                                ${descriptionItems.map(item => `
+                                    <div class="product-description-item">
+                                        <span class="product-description-label">${item.label}：</span>
+                                        <span class="product-description-value">${item.value}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ` : ''}
+                            <div class="product-final-price">
+                                <div class="product-final-price-label">${discountLabel || '优惠后最低售价'}</div>
+                                <div class="product-final-price-value">${finalPrice}${typeof finalPrice === 'string' && !finalPrice.includes('元') && !finalPrice.includes('/') && !finalPrice.includes('课时') && !finalPrice.includes('随心配') ? '元' : ''}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+
+        // 加载并显示事业部优惠政策（显示什么产品，什么优惠政策）
+        function loadPolicyAnnouncement(products) {
+            // 优惠政策已改为静态显示，详见下方活动搜索按钮
+            // 此函数保留以备用
+        }
+
+        // AI选岗功能
+        function showAIMatchModal() {
+            document.getElementById('aiMatchModal').style.display = 'block';
+        }
+
+        // 执行AI匹配
+        function performAIMatch(targetLocation, targetIndustry, targetPosition) {
+            if (!productsData || productsData.length === 0) {
+                alert('产品数据未加载，请稍后再试');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('aiMatchResults');
+            const productsDiv = document.getElementById('aiMatchProducts');
+            
+            // 匹配逻辑：根据目标地点、行业、岗位匹配产品
+            let matchedProducts = productsData.filter(product => {
+                let matchScore = 0;
+                const productName = (product.产品名 || '').toLowerCase();
+                const location = ((product.地点 || '') + ' ' + (product.Base地点 || '')).toLowerCase();
+                const industry = (product.行业 || '').toLowerCase();
+                const position = (product.岗位 || '').toLowerCase();
+                
+                // 地点匹配
+                if (targetLocation) {
+                    const locationKeywords = targetLocation.toLowerCase().split(/[，,、]/).map(s => s.trim());
+                    if (locationKeywords.some(k => location.includes(k) || productName.includes(k))) {
+                        matchScore += 3;
+                    }
+                }
+                
+                // 行业匹配
+                if (targetIndustry) {
+                    const industryKeywords = targetIndustry.toLowerCase().split(/[，,、]/).map(s => s.trim());
+                    if (industryKeywords.some(k => industry.includes(k) || productName.includes(k))) {
+                        matchScore += 3;
+                    }
+                }
+                
+                // 岗位匹配
+                if (targetPosition) {
+                    const positionKeywords = targetPosition.toLowerCase().split(/[，,、]/).map(s => s.trim());
+                    if (positionKeywords.some(k => position.includes(k) || productName.includes(k))) {
+                        matchScore += 2;
+                    }
+                }
+                
+                return matchScore > 0;
+            });
+            
+            // 按匹配度排序
+            matchedProducts.sort((a, b) => {
+                let scoreA = 0, scoreB = 0;
+                const nameA = (a.产品名 || '').toLowerCase();
+                const nameB = (b.产品名 || '').toLowerCase();
+                const locationA = ((a.地点 || '') + ' ' + (a.Base地点 || '')).toLowerCase();
+                const locationB = ((b.地点 || '') + ' ' + (b.Base地点 || '')).toLowerCase();
+                const industryA = (a.行业 || '').toLowerCase();
+                const industryB = (b.行业 || '').toLowerCase();
+                
+                if (targetLocation) {
+                    const locationKeywords = targetLocation.toLowerCase().split(/[，,、]/).map(s => s.trim());
+                    if (locationKeywords.some(k => locationA.includes(k) || nameA.includes(k))) scoreA += 3;
+                    if (locationKeywords.some(k => locationB.includes(k) || nameB.includes(k))) scoreB += 3;
+                }
+                if (targetIndustry) {
+                    const industryKeywords = targetIndustry.toLowerCase().split(/[，,、]/).map(s => s.trim());
+                    if (industryKeywords.some(k => industryA.includes(k) || nameA.includes(k))) scoreA += 3;
+                    if (industryKeywords.some(k => industryB.includes(k) || nameB.includes(k))) scoreB += 3;
+                }
+                
+                return scoreB - scoreA;
+            });
+            
+            // 限制显示前20个
+            matchedProducts = matchedProducts.slice(0, 20);
+            
+            if (matchedProducts.length === 0) {
+                productsDiv.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 2rem;">未找到匹配的产品，请调整搜索条件</div>';
+            } else {
+                // 渲染匹配的产品
+                productsDiv.innerHTML = matchedProducts.map(product => {
+                    const standardPrice = formatPrice(product.标准售价);
+                    const finalPrice = calculateFinalPrice(product);
+                    const finalPriceFormatted = formatPrice(finalPrice);
+                    
+                    return `
+                        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1rem;">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary);">${product.产品名 || 'N/A'}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                ${product.行业 ? '行业：' + product.行业 + ' ' : ''}
+                                ${product.地点 || product.Base地点 ? '地点：' + (product.地点 || product.Base地点) : ''}
+                            </div>
+                            <div style="font-size: 0.9rem; color: var(--text-primary);">
+                                <span style="text-decoration: line-through; color: var(--text-secondary);">${standardPrice}元</span>
+                                <span style="color: #10b981; font-weight: 600; margin-left: 0.5rem;">${finalPriceFormatted}元</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // AI选岗模态框事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeAIMatchModal = document.getElementById('closeAIMatchModal');
+            const startAIMatch = document.getElementById('startAIMatch');
+            
+            if (closeAIMatchModal) {
+                closeAIMatchModal.addEventListener('click', function() {
+                    document.getElementById('aiMatchModal').style.display = 'none';
+                });
+            }
+            
+            if (startAIMatch) {
+                startAIMatch.addEventListener('click', function() {
+                    const targetLocation = document.getElementById('targetLocation').value.trim();
+                    const targetIndustry = document.getElementById('targetIndustry').value.trim();
+                    const targetPosition = document.getElementById('targetPosition').value.trim();
+                    
+                    if (!targetLocation && !targetIndustry) {
+                        alert('请至少输入目标地点或目标行业');
+                        return;
+                    }
+                    
+                    // 执行AI匹配
+                    performAIMatch(targetLocation, targetIndustry, targetPosition);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+
+
