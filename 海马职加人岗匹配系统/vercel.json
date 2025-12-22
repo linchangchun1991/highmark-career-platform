@@ -1,28 +1,9 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "product-price-query.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/product-price-query.html"
-    },
-    {
-      "src": "/product-price-query.html",
-      "dest": "/product-price-query.html"
-    },
-    {
-      "src": "/products_with_policies.json",
-      "dest": "/products_with_policies.json",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json; charset=utf-8",
-        "Cache-Control": "public, max-age=3600"
-      }
+      "source": "/",
+      "destination": "/product-price-query.html"
     }
   ],
   "headers": [
@@ -40,6 +21,23 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/products_with_policies.json",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
         }
       ]
     }
